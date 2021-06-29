@@ -7,7 +7,7 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY_DJANGO')
+SECRET_KEY = os.getenv('SECRET_KEY_DJANGO', 'to_pass_tests')
 
 DEBUG = False
 
@@ -132,5 +132,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': os.getenv('SECRET_KEY_DJANGO'),
+    'SIGNING_KEY': os.getenv('SECRET_KEY_DJANGO', 'to_pass_tests'),
 }
