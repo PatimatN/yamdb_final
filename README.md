@@ -1,3 +1,5 @@
+![example workflow](https://github.com/PatimatN/yamdb_final/actions/workflows/main.yml/badge.svg)
+
 # Докеризация API YaMDb. База отзывов о фильмах, книгах и музыке.
 
 ## Развертывание
