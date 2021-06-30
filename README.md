@@ -35,7 +35,8 @@ TELEGRAM_TOKEN # Токен бота
 * Соберите статику командой sudo docker-compose exec yamdb python manage.py collectstatic --no-input
 * Создайте суперпользователя Django sudo docker-compose exec yamdb python manage.py createsuperuser --username admin --email 'admin@yamdb.com'
 * Загрузите данные в базу данных при необходимости sudo docker-compose exec yamdb python manage.py loaddata data/fixtures.json
-* 
+
+
 ### После каждого обновления репозитория (git push) будет происходить:
 1. Проверка кода на соответствие стандарту PEP8 (с помощью пакета flake8) и запуск pytest из репозитория yamdb_final
 2. Сборка и доставка докер-образов на Docker Hub.
