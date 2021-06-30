@@ -1,50 +1,45 @@
 ![example workflow](https://github.com/PatimatN/yamdb_final/actions/workflows/main.yml/badge.svg)
 
+API развернут по адресу http://130.193.54.64/api/v1/
 # Докеризация API YaMDb. База отзывов о фильмах, книгах и музыке.
+С Docker, Continuous Integration на GitHub Actions
 
-## Развертывание
+### Алгоритм регистрации пользователей
+* Пользователь отправляет запрос с параметром email на /auth/email/.
+* YaMDB отправляет письмо с кодом подтверждения (confirmation_code) на адрес email .
+* Пользователь отправляет запрос с параметрами email и confirmation_code на /auth/token/, в ответе на запрос ему приходит token (JWT-токен).
+* При желании пользователь отправляет PATCH-запрос на /users/me/ и заполняет поля в своём профайле (описание полей — в документации). Полная документация API (redoc.yaml)
 
-### Шаг первый. Сборка контейнера
-```
-docker-compose build
-```
+## Деплой на удаленный сервер
+Для запуска проекта на удаленном сервере необходимо:
 
-### Шаг третий. Запуск контейнера
+* скопировать на сервер файлы docker-compose.yaml, .env и папку nginx командами:
 ```
-docker-compose up
+scp docker-compose.yaml  <user>@<server-ip>:
+scp .env <user>@<server-ip>:
+scp -r nginx/ <user>@<server-ip>:
 ```
-
-### Шаг четвертый. База данных
+* создать переменные окружения в разделе secrets настроек текущего репозитория:
 ```
-docker-compose run web python manage.py migrate --no-input
+DOCKER_PASSWORD # Пароль от Docker Hub
+DOCKER_USERNAME # Логин от Docker Hub
+HOST # Публичный ip адрес сервера
+USER # Пользователь зарегистрированный на сервере
+PASSPHRASE # Если ssh-ключ защищен фразой-паролем
+SSH_KEY # Приватный ssh-ключ
+TELEGRAM_TO # ID телеграм-аккаунта
+TELEGRAM_TOKEN # Токен бота
 ```
-
-
-## Использование
-
-### Создание суперпользователя Django
-```
-docker-compose run web python manage.py createsuperuser
-```
-
-### Импорт данных в формате .json
-```
-docker-compose run web python manage.py loaddata path/to/your/json
-```
-#### Пример инициализации стартовых данных:
-```
-docker-compose run web python manage.py loaddata fixtures/fixture.json
-```
-
-
-## Выключение контейнера
-```
-docker-compose down
-```
+* Запустите docker-compose командой sudo docker-compose up -d
+* Накатите миграции sudo docker-compose exec web python manage.py migrate
+* Соберите статику командой sudo docker-compose exec yamdb python manage.py collectstatic --no-input
+* Создайте суперпользователя Django sudo docker-compose exec yamdb python manage.py createsuperuser --username admin --email 'admin@yamdb.com'
+* Загрузите данные в базу данных при необходимости sudo docker-compose exec yamdb python manage.py loaddata data/fixtures.json
 
 
-## Удаление всех Docker контейнеров
-```
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
-```
+### После каждого обновления репозитория (git push) будет происходить:
+1. Проверка кода на соответствие стандарту PEP8 (с помощью пакета flake8) и запуск pytest из репозитория yamdb_final
+2. Сборка и доставка докер-образов на Docker Hub.
+3. Автоматический деплой.
+4. Отправка уведомления в Telegram.
+
