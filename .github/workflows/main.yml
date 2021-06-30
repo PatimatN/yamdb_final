@@ -42,6 +42,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
@@ -62,8 +63,6 @@ jobs:
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo EMAIL_HOST_DJANGO=${{ secrets.EMAIL_HOST_DJANGO }} >> .env
-            echo PASSWORD_EMAIL_DJANGO=${{ secrets.PASSWORD_EMAIL_DJANGO }} >> .env
             sudo docker-compose up -d
   send_message:
     runs-on: ubuntu-latest
